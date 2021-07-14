@@ -3,9 +3,7 @@ defmodule ExMars.InputInterpreter do
   InputInterpreter
   """
 
-  alias ExMars.Rover
-  alias ExMars.Rover.Position, as: RoverPosition
-  alias ExMars.WorldMap.Position, as: WorldPosition
+  alias ExMars.{Rover, Rover.Position}
 
   def interpret(input) do
     with {:ok, tokens} <- tokenize(input),
@@ -37,18 +35,16 @@ defmodule ExMars.InputInterpreter do
   end
 
   defp to_structs(commands) do
-    {{x, y} = _world_map_size, rovers} = commands
+    {world_map_size, rovers} = commands
 
     rovers =
       rovers
       |> Enum.map(fn {{x, y, direction}, commands} ->
-        position = %RoverPosition{x: x, y: y, direction: to_string(direction)}
+        position = %Position{x: x, y: y, direction: to_string(direction)}
         commands = commands |> Enum.map(&to_string/1)
         Rover.new(position, commands)
       end)
 
-    world_map_position = %WorldPosition{x: x, y: y}
-
-    {world_map_position, rovers}
+    {world_map_size, rovers}
   end
 end
