@@ -16,7 +16,7 @@ defmodule ExMars do
     end
   end
 
-  defp build_rovers(world_map, rovers) do
+  def build_rovers(world_map, rovers) do
     rovers
     |> Enum.map(fn rover ->
       Task.async(fn -> build_rover(world_map, rover) end)
