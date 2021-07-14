@@ -1,43 +1,30 @@
-FROM elixir:1.12.2-alpine as builder
+FROM elixir:latest
 
-RUN apk add --no-cache \
-  git
-
-ENV MIX_ENV=dev
-
+# Create and set home directory
 WORKDIR /app
 
+# Configure required environment
+ENV MIX_ENV prod
+
+# Install hex (Elixir package manager)
+RUN mix local.hex --force
+
+# Install rebar (Erlang build tool)
+RUN mix local.rebar --force
+
+# Copy all dependencies files
 COPY mix.*  ./
 
-RUN mix local.rebar --force && \
-  mix local.hex --if-missing --force && \
-  mix do deps.get, deps.compile
+# Install all production dependencies
+RUN mix deps.get
 
+# Compile all dependencies
+RUN mix deps.compile
+
+# Copy all application files
 COPY . .
 
-RUN mix escript.build \
-  && rm -rf /app/deps
+# Compile the entire project
+RUN mix compile
 
-#########################
-# Stage: production     #
-#########################
-
-FROM alpine:3.11 as production
-
-RUN apk add --no-cache \
-  bash \
-  openssl \
-  curl
-
-WORKDIR /app
-
-ENV MIX_ENV=dev
-
-COPY --from=builder /app/ ./
-
-RUN chown -R nobody: /app
-USER nobody
-ENV HOME=/app
-
-ENTRYPOINT ["ex_mars"]
-# CMD ["./bin/start.sh"]
+CMD ["./bin/start.sh"]
