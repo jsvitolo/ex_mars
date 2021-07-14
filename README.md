@@ -45,9 +45,16 @@ MMRMMRMRRM
 5 1 E
 ```
 
-# Running CLI
+# Running CLI with mix
 
 ```
 mix escript.build
 ./ex_mars test/support/input.txt
+```
+
+# Running CLI with docker
+
+```
+docker build . -t ex_mars
+docker run ex_mars
 ```
