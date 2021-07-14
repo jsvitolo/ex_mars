@@ -24,3 +24,5 @@ ex_mars-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+ex_mars
